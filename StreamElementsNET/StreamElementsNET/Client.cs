@@ -48,6 +48,13 @@ namespace StreamElementsNET
         public event EventHandler<Models.Host.Host> OnHost;
         public event EventHandler<Models.Host.HostLatest> OnHostLatest;
 
+        // raid
+        public event EventHandler<Models.Raid.Raid> OnRaid;
+        public event EventHandler<Models.Raid.RaidLatest> OnRaidLatest;
+
+        // redemption
+        public event EventHandler<Models.Redemption.RedemptionLatest> OnRedemptionLatest;
+
         // tip
         public event EventHandler<Models.Tip.Tip> OnTip;
         public event EventHandler<int> OnTipCount;
@@ -161,6 +168,11 @@ namespace StreamElementsNET
                 handleSimpleUpdate(JArray.Parse(raw));
                 return;
             }
+            if (e.Message.StartsWith("42[\"event:test\""))
+            {
+                HandleTest(JArray.Parse(raw));
+                return;
+            }
         }
 
         private void handleComplexObject(JArray decoded)
@@ -187,6 +199,9 @@ namespace StreamElementsNET
                     return;
                 case "subscriber":
                     OnSubscriber?.Invoke(client, Parsing.Subscriber.handleSubscriber(decoded[1]["data"]));
+                    return;
+                case "raid":
+                    OnRaid?.Invoke(client, Parsing.Raid.handleRaid(decoded[1]["data"]));
                     return;
                 default:
                     OnUnknownComplexObject?.Invoke(client, decoded[1]["type"].ToString());
@@ -319,8 +334,167 @@ namespace StreamElementsNET
                 case "subscriber-gifted-latest":
                     OnSubscriberGiftedLatest?.Invoke(client, Parsing.Subscriber.handleSubscriberGiftedLatest(data));
                     return;
+                case "raid-latest":
+                    OnRaidLatest?.Invoke(client, Parsing.Raid.handleRaidLatest(data));
+                    return;
+                case "redemption-latest":
+                    OnRedemptionLatest?.Invoke(client, Parsing.Redemption.handleRedemptionLatest(data));
+                    return;
                 default:
                     OnUnknownSimpleUpdate?.Invoke(client, decoded[1]["name"].ToString());
+                    return;
+            }
+        }
+
+        private void HandleTest(JArray decoded)
+        {
+            if (decoded[0].ToString() != "event:test")
+                return;
+            var data = decoded[1]["event"];
+            var eventName = decoded[1]["listener"].ToString();
+
+            if (data is JArray)
+            {
+                foreach (var Event in data)
+                {
+                    HandleTestUpdate(eventName, Event);
+                }
+            }
+            else
+            {
+                HandleTestUpdate(eventName, data);
+            }
+        }
+
+        private void HandleTestUpdate(string eventName, JToken data)
+        {
+            switch (eventName)
+            {
+                case "follower-latest":
+                    OnFollowerLatest?.Invoke(client, Parsing.Follower.handleFollowerLatest(data));
+                    return;
+                case "follower-goal":
+                    OnFollowerGoal?.Invoke(client, Parsing.Follower.handleFollowerGoal(data));
+                    return;
+                case "follower-month":
+                    OnFollowerMonth?.Invoke(client, Parsing.Follower.handleFollowerMonth(data));
+                    return;
+                case "follower-week":
+                    OnFollowerWeek?.Invoke(client, Parsing.Follower.handleFollowerWeek(data));
+                    return;
+                case "follower-total":
+                    OnFollowerTotal?.Invoke(client, Parsing.Follower.handleFollowerTotal(data));
+                    return;
+                case "follower-session":
+                    OnFollowerSession?.Invoke(client, Parsing.Follower.handleFollowerSession(data));
+                    return;
+                case "cheer-latest":
+                    OnCheerLatest?.Invoke(client, Parsing.Cheer.handleCheerLatest(data));
+                    return;
+                case "cheer-goal":
+                    OnCheerGoal?.Invoke(client, Parsing.Cheer.handleCheerGoal(data));
+                    return;
+                case "cheer-count":
+                    OnCheerCount?.Invoke(client, Parsing.Cheer.handleCheerCount(data));
+                    return;
+                case "cheer-total":
+                    OnCheerTotal?.Invoke(client, Parsing.Cheer.handleCheerTotal(data));
+                    return;
+                case "cheer-session":
+                    OnCheerSession?.Invoke(client, Parsing.Cheer.handleCheerSession(data));
+                    return;
+                case "cheer-session-top-donator":
+                    OnCheerSessionTopDonator?.Invoke(client, Parsing.Cheer.handleCheerSessionTopDonator(data));
+                    return;
+                case "cheer-session-top-donation":
+                    OnCheerSessionTopDonation?.Invoke(client, Parsing.Cheer.handleCheerSessionTopDonation(data));
+                    return;
+                case "cheer-month":
+                    OnCheerMonth?.Invoke(client, Parsing.Cheer.handleCheerMonth(data));
+                    return;
+                case "cheer-week":
+                    OnCheerWeek?.Invoke(client, Parsing.Cheer.handleCheerWeek(data));
+                    return;
+                case "host-latest":
+                    OnHostLatest?.Invoke(client, Parsing.Host.handleHostLatest(data));
+                    return;
+                case "tip-count":
+                    OnTipCount?.Invoke(client, Parsing.Tip.handleTipCount(data));
+                    return;
+                case "tip-latest":
+                    OnTipLatest?.Invoke(client, Parsing.Tip.handleTipLatest(data));
+                    return;
+                case "tip-session":
+                    OnTipSession?.Invoke(client, Parsing.Tip.handleTipSession(data));
+                    return;
+                case "tip-goal":
+                    OnTipGoal?.Invoke(client, Parsing.Tip.handleTipGoal(data));
+                    return;
+                case "tip-week":
+                    OnTipWeek?.Invoke(client, Parsing.Tip.handleTipWeek(data));
+                    return;
+                case "tip-total":
+                    OnTipTotal?.Invoke(client, Parsing.Tip.handleTipTotal(data));
+                    return;
+                case "tip-month":
+                    OnTipMonth?.Invoke(client, Parsing.Tip.handleTipMonth(data));
+                    return;
+                case "tip-session-top-donator":
+                    OnTipSessionTopDonator?.Invoke(client, Parsing.Tip.handleTipSessionTopDonator(data));
+                    return;
+                case "tip-session-top-donation":
+                    OnTipSessionTopDonation?.Invoke(client, Parsing.Tip.handleTipSessionTopDonation(data));
+                    return;
+                case "subscriber-latest":
+                    OnSubscriberLatest?.Invoke(client, Parsing.Subscriber.handleSubscriberLatest(data));
+                    return;
+                case "subscriber-session":
+                    OnSubscriberSession?.Invoke(client, Parsing.Subscriber.handleSubscriberSession(data));
+                    return;
+                case "subscriber-goal":
+                    OnSubscriberGoal?.Invoke(client, Parsing.Subscriber.handleSubscriberGoal(data));
+                    return;
+                case "subscriber-month":
+                    OnSubscriberMonth?.Invoke(client, Parsing.Subscriber.handleSubscriberMonth(data));
+                    return;
+                case "subscriber-week":
+                    OnSubscriberWeek?.Invoke(client, Parsing.Subscriber.handleSubscriberWeek(data));
+                    return;
+                case "subscriber-total":
+                    OnSubscriberTotal?.Invoke(client, Parsing.Subscriber.handleSubscriberTotal(data));
+                    return;
+                case "subscriber-points":
+                    OnSubscriberPoints?.Invoke(client, Parsing.Subscriber.handleSubscriberPoints(data));
+                    return;
+                case "subscriber-resub-session":
+                    OnSubscriberResubSession?.Invoke(client, Parsing.Subscriber.handleSubscriberResubSession(data));
+                    return;
+                case "subscriber-resub-latest":
+                    OnSubscriberResubLatest?.Invoke(client, Parsing.Subscriber.handleSubscriberResubLatest(data));
+                    return;
+                case "subscriber-new-session":
+                    OnSubscriberNewSession?.Invoke(client, Parsing.Subscriber.handleSubscriberNewSession(data));
+                    return;
+                case "subscriber-gifted-session":
+                    OnSubscriberGiftedSession?.Invoke(client, Parsing.Subscriber.handleSubscriberGiftedSession(data));
+                    return;
+                case "subscriber-new-latest":
+                    OnSubscriberNewLatest?.Invoke(client, Parsing.Subscriber.handleSubscriberNewLatest(data));
+                    return;
+                case "subscriber-alltime-gifter":
+                    OnSubscriberAlltimeGifter?.Invoke(client, Parsing.Subscriber.handleSubscriberAlltimeGifter(data));
+                    return;
+                case "subscriber-gifted-latest":
+                    OnSubscriberGiftedLatest?.Invoke(client, Parsing.Subscriber.handleSubscriberGiftedLatest(data));
+                    return;
+                case "raid-latest":
+                    OnRaidLatest?.Invoke(client, Parsing.Raid.handleRaidLatest(data));
+                    return;
+                case "redemption-latest":
+                    OnRedemptionLatest?.Invoke(client, Parsing.Redemption.handleRedemptionLatest(data));
+                    return;
+                default:
+                    OnUnknownSimpleUpdate?.Invoke(client, eventName);
                     return;
             }
         }

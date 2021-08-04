@@ -12,6 +12,11 @@ namespace StreamElementsNET.Parsing
             return new Models.Follower.Follower(json["username"].ToString(), json["providerId"].ToString(), json["displayName"].ToString(), json["avatar"].ToString());
         }
 
+        public static string handleTestFollower(JToken json)
+        {
+            return json["name"].ToString();
+        }
+
         public static string handleFollowerLatest(JToken json)
         {
             return json["name"].ToString();
