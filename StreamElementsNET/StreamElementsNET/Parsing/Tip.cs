@@ -19,7 +19,7 @@ namespace StreamElementsNET.Parsing
 
         public static Models.Tip.TipLatest handleTipLatest(JToken json)
         {
-            return new Models.Tip.TipLatest(json["name"].ToString(), double.Parse(json["amount"].ToString()), json["message"].ToString());
+            return new Models.Tip.TipLatest(json["name"].ToString(), double.Parse(json["amount"].ToString()), json["message"]?.ToString());
         }
 
         public static double handleTipSession(JToken json)
