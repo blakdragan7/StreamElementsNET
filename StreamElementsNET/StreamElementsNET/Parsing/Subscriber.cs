@@ -21,7 +21,11 @@ namespace StreamElementsNET.Parsing
             var gifted = json["gifted"] != null;
             var sender = json["sender"] != null ? json["sender"].ToString() : "";
             var message = json["message"] != null ? json["message"].ToString() : "";
-            return new Models.Subscriber.SubscriberLatest(json["name"].ToString(), int.Parse(json["amount"].ToString()), json["tier"].ToString(), message, gifted, sender);
+            var name = json["name"] != null ? json["name"].ToString() : "Unkown";
+            var amount = json["amount"] != null ? json["amount"].ToString() : "-1";
+            var tier = json["tier"] != null ? json["tier"].ToString() : "";
+
+            return new Models.Subscriber.SubscriberLatest(name, int.Parse(amount), tier, message, gifted, sender);
         }
 
         public static int handleSubscriberSession(JToken json)
